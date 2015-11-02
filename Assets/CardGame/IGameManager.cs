@@ -2,9 +2,10 @@
 using System.Collections;
 namespace strange.examples.CardGame
 {
-    public class IGameManager : MonoBehaviour
+    public interface IGameManager
     {
-
+        void OnCheck();
+        void StartGame();
   
     }
 }

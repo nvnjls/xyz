@@ -4,7 +4,11 @@
 		void CardSelected(UiCard selectedCard);
 		UiCard GetSelectedCard();
 		void SetGameMode(CardManager.Type mode);
-		void StartGame();
-		void OnCheck();
+        void ShowAICards();
+        void DeleteAllCards();
+        UiCard[] GetPlayerCards();
+        void GenerateCards(int count, bool mIsAICard);
+        UiCard GetMaxPriorityCard(UiCard[] cards);
+        UiCard GetLeastHigherPriorityAICard(UiCard selectedCard);
 	}
 }

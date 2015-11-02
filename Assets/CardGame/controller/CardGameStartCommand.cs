@@ -9,7 +9,7 @@ namespace strange.examples.CardGame {
 	public class CardGameStartCommand : Command {
 
 		[Inject]
-		public ICardsManager manager { get; set; }
+		public IGameManager manager { get; set; }
 
 		public override void Execute() {
 			// perform all game start setup here

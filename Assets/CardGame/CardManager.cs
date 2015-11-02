@@ -12,8 +12,6 @@ namespace strange.examples.CardGame {
 		[Inject]
 		public ShowResultSignal showResult { get; set; }
 
-        [Inject]
-        public IScoreManager scoreManager { get; set; }
 		[Inject]
 		public ShowWarningSignal showWarning { get; set; }
 
@@ -38,34 +36,23 @@ namespace strange.examples.CardGame {
 			public bool _IsSingleStep ;
 		}
 		public List<GameMode> _GameModes;
-		public string SheetName ;
+		public static string SheetName ;
 		public GameObject UiCardObj;
 		public GameObject AICards;
 		public GameObject PlayerCards;
 		public float CardSpaceWidth = 40;
-		private Sprite[] sprites;
-		private GameMode pCurrentGameMode;
+		public static Sprite[] sprites;
+		public static GameMode pCurrentGameMode;
 		/*
 		 * This list will be used to make sure that the Random numbers will not be repeated
 		 * */
-		private List<int> tempList;
-		public static CardManager pInstance;
-		public UiCard pSelectedCard = null;
-		public static int mPlayerScore , mAIScore , mCheckCount;
-		private bool initDone = false;
+		public static List<int> tempList;
 		
-		public void StartGame () 
-		{
-			if(!initDone)
-			{
-				pInstance = this;
-				sprites = Resources.LoadAll<Sprite>(SheetName); 
-				SetGameMode (Type.BEGINNER);
-				tempList = new List<int>();
-				initDone = true;
-			}
-			Restart ();		
-		}
+		public static UiCard pSelectedCard = null;
+		public static int mPlayerScore , mAIScore , mCheckCount;
+		public static bool initDone = false;
+		
+		
 		public UiCard GetSelectedCard ()
 		{
 			return pSelectedCard;
@@ -110,7 +97,7 @@ namespace strange.examples.CardGame {
 		}
 
 		
-		private void GenerateCards(int count , bool mIsAICard)
+		public void GenerateCards(int count , bool mIsAICard)
 		{
 			Transform parentTransform;
 			if (mIsAICard)
@@ -133,28 +120,7 @@ namespace strange.examples.CardGame {
 			foreach(UiCard card in cards)
 				card.SetSprite (sprites [card.pPriority]);
 		}
-		public void OnSubmitScores()
-		{
-			ShowAICards ();
-			if (mAIScore > mPlayerScore)
-			{
-				showResult.Dispatch (true , "You Lost");
-
-				Debug.Log ("Computer score is higher");
-			}
-			else if (mAIScore < mPlayerScore)
-			{
-				showResult.Dispatch (true , "You Won");
-
-				Debug.Log ("Player score is higher");
-			}
-			else
-			{
-				showResult.Dispatch (true , "Match Tie");
-
-				Debug.Log ("Both are equal");
-			}
-		}
+		
 
 		public UiCard[] GetAICards()
 		{
@@ -166,38 +132,10 @@ namespace strange.examples.CardGame {
 		}
 
 
-		public void OnCheck()
-		{
-			if ((pSelectedCard == null && GetPlayerCards ().Length > 1) || (pSelectedCard != null && pSelectedCard.pHasChecked))
-			{
-				Debug.Log ("Please select a card");
-				//_WarningText.gameObject.SetActive(true);
-				showWarning.Dispatch(true);
-				return;
-			}
-			mCheckCount++; 
-			if(pSelectedCard == null)
-				pSelectedCard = GetMaxPriorityCard (GetPlayerCards());
-			pSelectedCard.pHasChecked = true;
-			if (GetLeastHigherPriorityAICard(pSelectedCard) != null)
-			{
-				mAIScore ++;
-				Debug.Log ("Computer Won");
-			}
-			else 
-			{
-				mPlayerScore ++;
-				Debug.Log ("Pllayer Won");
-			}
-			scoreManager.UpdateScores ();
-			if (mCheckCount >= 3 || pCurrentGameMode._IsSingleStep)
-				OnSubmitScores ();
-			pSelectedCard.ResetPosition();
-			pSelectedCard = null;
-		}
+		
 		
 
-		private UiCard GetLeastHigherPriorityAICard(UiCard selectedCard)
+		public UiCard GetLeastHigherPriorityAICard(UiCard selectedCard)
 		{
 			UiCard [] cards = GetAICards ();
 			UiCard LeastHigherPriorityCard = null;
@@ -223,7 +161,7 @@ namespace strange.examples.CardGame {
 		/* 
 		 * This is to get the Max priority card from the give array of Cards
 		 * */
-		private UiCard GetMaxPriorityCard(UiCard []cards)
+		public UiCard GetMaxPriorityCard(UiCard []cards)
 		{
 			UiCard maxCard = cards [0];
 			foreach(UiCard card in cards)
@@ -233,7 +171,7 @@ namespace strange.examples.CardGame {
 			}
 			return maxCard;
 		}
-		private void DeleteAllCards()
+		public void DeleteAllCards()
 		{
 			UiCard []aicards = GetAICards();
 			UiCard []playerCards = GetPlayerCards();
@@ -250,24 +188,6 @@ namespace strange.examples.CardGame {
 					pCurrentGameMode = mode;
 		}
 	
-		public void Restart()
-		{
-			mPlayerScore = 0;
-			mAIScore = 0;
-			mCheckCount = 0;
-			pSelectedCard = null;
-			scoreManager.UpdateScores ();
-			//_WonText.gameObject.SetActive (false);
-			//_WarningText.gameObject.SetActive(false);
-			showWarning.Dispatch(false );
-			showResult.Dispatch (false , "");
-
-			tempList.Clear ();
-			DeleteAllCards ();
-			/* For now we have only 2 players.i.e Player and AI Player(Computer/Mobile) , so hard coding for now
-			 * */
-			GenerateCards(pCurrentGameMode._CardsCount , true);
-			GenerateCards(pCurrentGameMode._CardsCount , false);
-		}
+		
 	}
 }

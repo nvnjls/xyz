@@ -32,6 +32,9 @@ namespace strange.examples.CardGame {
             ScoreManager scoreManager = GameObject.Find("CanvasObj").GetComponent<ScoreManager>();
             injectionBinder.Bind<IScoreManager>().ToValue(scoreManager);
 
+            GameManager gameManager = GameObject.Find("CanvasObj").GetComponent<GameManager>();
+            injectionBinder.Bind<IGameManager>().ToValue(gameManager);
+
 			HUDManager viewmanager = cardManager.GetComponentInChildren<HUDManager>();
 			injectionBinder.Bind<IHUDViewManager>().ToValue(viewmanager);
 		}
